@@ -1,7 +1,24 @@
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import API_URL from './config'
 
 const Home = () => {
   const navigate = useNavigate()
+  const [entries, setEntries] = useState([])
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/diary-entries`)
+        setEntries(response.data.data)
+      } catch (error) {
+        console.error('Error fetching diary entries: ', error)
+      }
+    }
+
+    fetchEntries()
+  }, [])
 
   // Dummy data for existing journal entries
   const dummyEntries = [
@@ -24,7 +41,7 @@ const Home = () => {
       <h1>My Journal Entries </h1>
       <button onClick={() => navigate('/new-entry')}>New Entry</button>
       <div>
-        {dummyEntries.map((entry) => (
+        {entries.map((entry) => (
           <div
             key={entry.id}
             style={{
@@ -33,12 +50,12 @@ const Home = () => {
               padding: '10px',
             }}
           >
-            <h2>{entry.title}</h2>
+            <h2>{entry.Title}</h2>
             <p>
               <strong>Date: </strong>
-              {entry.date}
+              {entry.Date}
             </p>
-            <p>{entry.content}</p>
+            <p>{entry.Content}</p>
           </div>
         ))}
       </div>

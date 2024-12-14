@@ -1,17 +1,31 @@
 import { useState } from 'react'
+import axios from 'axios'
+import API_URL from './config'
 import { useNavigate } from 'react-router-dom'
 
 const DiaryPage = () => {
   const [title, setTitle] = useState('')
-  const [text, setText] = useState('')
+  const [content, setContent] = useState('')
   const [count, setCount] = useState(0)
   const [message, setMessage] = useState('')
   const navigate = useNavigate()
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // placeholder for API call
-    setMessage('Your entry has been saved successfully!')
-    setTimeout(() => navigate('/'), 2000)
+    try {
+      await axios.post(`${API_URL}/diary-entries`, {
+        data: {
+          Title: title,
+          Content: content,
+          Date: new Date().toISOString(),
+        },
+      })
+      setMessage('Your entry has been saved successfully!')
+      setTimeout(() => navigate('/'), 2000)
+    } catch (error) {
+      setMessage('Error saving diary entry')
+      console.error(error)
+    }
   }
 
   return (
@@ -25,9 +39,9 @@ const DiaryPage = () => {
       />
       <textarea
         placeholder="Write your thoughts here..."
-        value={text}
+        value={content}
         onChange={(e) => {
-          setText(e.target.value)
+          setContent(e.target.value)
           setCount(e.target.value.split(' ').length)
         }}
       ></textarea>
